@@ -44,7 +44,7 @@ is claimed. Continuous/tool/compaction refresh, installation preservation, and
 live model smoke checks remain explicit step 5 acceptance work. Research spikes
 must not become the production adapter architecture.
 
-## Step 2 — foundation (next)
+## Step 2 — foundation (in progress)
 
 Slices and evidence:
 
@@ -57,3 +57,9 @@ Slices and evidence:
    document fresh-clone setup.
 4. Fresh independent review of the entire step; fix and confirm findings before
    implementing the shared core.
+
+Package/check slice committed as cbffff2. `uv sync --frozen` installs on Python
+3.12; aggregate lock/format/lint/type/test/build gate passes. Wheel and source
+archive build successfully; wheel inspection confirms the complete MIT license
+is included. CI uses the same gate. Hooks and their isolated failure-path
+verification remain pending, followed by independent step review.
