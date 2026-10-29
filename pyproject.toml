@@ -12,6 +12,10 @@ license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "ZakYeo"}]
 
+[project.urls]
+Repository = "https://github.com/ZakYeo/daybrief"
+Issues = "https://github.com/ZakYeo/daybrief/issues"
+
 [project.scripts]
 daybrief = "daybrief.cli:main"
 

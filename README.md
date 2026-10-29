@@ -21,9 +21,11 @@ and let the next agent refresh pick up the current state.
 Prerequisites: **Linux, Python 3.12+, Git, and uv**. The contributor baseline is
 Python 3.12 and uv 0.11.21. Other operating systems have not been qualified.
 
-From a checkout of this repository:
+Clone the repository and install from the checkout:
 
 ```sh
+git clone https://github.com/ZakYeo/daybrief.git
+cd daybrief
 uv tool install --python 3.12 .
 daybrief --help
 ```
