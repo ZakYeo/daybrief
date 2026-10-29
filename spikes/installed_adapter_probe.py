@@ -23,6 +23,7 @@ from daybrief.storage import Store
 parser = argparse.ArgumentParser()
 parser.add_argument('client', choices=['codex', 'claude', 'copilot'])
 parser.add_argument('--skill', action='store_true')
+parser.add_argument('--interactive', action='store_true')
 args = parser.parse_args()
 requests = []
 
@@ -47,9 +48,11 @@ class Capture(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'{"input_tokens": 100}')
             return
-        requests.append(payload)
+        auxiliary = any(text.startswith('Generate a concise, single-line task title') for text in strings(payload.get('input', [])))
+        if not auxiliary:
+            requests.append(payload)
         skill_turn = args.skill and args.client == 'copilot' and len(requests) == 1
-        first = len(requests) == (2 if args.skill and args.client == 'copilot' else 1)
+        first = not auxiliary and len(requests) == (2 if args.skill and args.client == 'copilot' else 1)
         self.send_response(200)
         self.send_header('Content-Type', 'text/event-stream')
         self.end_headers()
@@ -58,9 +61,9 @@ class Capture(BaseHTTPRequestHandler):
             if first and 'exec_command' not in names:
                 raise AssertionError(f'Expected exec_command in {names}')
             output = [{'type': 'function_call', 'id': 'fc_probe', 'call_id': 'call_probe',
-                       'name': 'exec_command', 'arguments': json.dumps({'cmd': command})}] if first else []
+                       'name': 'exec_command', 'arguments': json.dumps({'cmd': command})}] if first else [{'type': 'message', 'id': 'msg_probe', 'role': 'assistant', 'content': [{'type': 'output_text', 'text': 'Probe complete.'}]}]
             events = []
-            if first:
+            if output:
                 events.append({'type': 'response.output_item.done', 'output_index': 0, 'item': output[0]})
             events.append({'type': 'response.completed', 'response': {
                 'id': 'resp_' + str(len(requests)), 'status': 'completed', 'output': output,
@@ -109,6 +112,8 @@ with tempfile.TemporaryDirectory(prefix='daybrief-installed-') as directory:
     thread.start()
     environment = {key: os.environ[key] for key in ['PATH', 'HOME', 'LANG'] if key in os.environ}
     environment['DAYBRIEF_DATA_DIR'] = str(data)
+    environment['HOME'] = str(root / 'home')
+    (root / 'home').mkdir()
     endpoint = f'http://127.0.0.1:{server.server_port}'
     prompt = 'Run the requested tool to delete the isolated probe brief, then finish.'
     if args.skill:
@@ -136,6 +141,10 @@ request_max_retries = 0
                            COPILOT_PROVIDER_BASE_URL=endpoint + '/v1', COPILOT_MODEL='probe')
         argv = ['/tmp/daybrief-copilot-spike/node_modules/.bin/copilot', '--no-auto-update', '--disable-client-telemetry', '--disable-builtin-mcps', '--trust-folder', '--allow-tool', 'shell', '--allow-all-paths', '--output-format', 'json', '-p', prompt]
     try:
+        if args.interactive:
+            from native_interactive import interactive
+            interactive(args.client, argv, environment, work, requests, app, strings)
+            raise SystemExit(0)
         result = subprocess.run(argv, cwd=work, env=environment, stdin=subprocess.DEVNULL,
                                 capture_output=True, timeout=45)
         assert result.returncode == 0, result.stderr.decode()[-3000:] + result.stdout.decode()[-3000:]

@@ -176,3 +176,12 @@ empty post-tool snapshot in the same running process. Codex uses `$daybrief`;
 Claude and Copilot use `/daybrief`. The Copilot probe needed explicit permission
 for its temporary Python executable path; no production permission setting changed.
 No hosted model was used. Continuous user-turn and compaction checks remain.
+
+Continuous-session probes now pass for all three native clients, including a new
+brief on the next user turn and fresh withdrawal after native manual compaction.
+The probes check actual compaction completion and timestamp freshness so old empty
+snapshots cannot satisfy the assertion. Codex's auxiliary title requests are
+excluded from conversation-turn checks. Profiles and HOME are disposable.
+Shared-store subprocess coverage verifies all installed client hooks read the same
+CLI-created IDs and apply repository/global scope correctly. Full gate: 56 tests
+and both builds. Support/setup/evidence details are in docs/support-matrix.md.

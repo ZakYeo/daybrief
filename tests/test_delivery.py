@@ -69,3 +69,60 @@ def test_hook_read_failure_invalidates_stale_context(tmp_path):
     assert "does not mean none exist" in context
     assert "daybrief:" in result.stderr
     assert (tmp_path / "state.sqlite").read_text() == "corrupt database"
+
+
+def test_installed_clients_share_cli_data_and_repository_scope(tmp_path):
+    from daybrief.install import SETTINGS, install
+
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    data = tmp_path / "shared-data"
+    environment = dict(os.environ, DAYBRIEF_DATA_DIR=str(data), TZ="UTC")
+
+    def cli(*args):
+        result = subprocess.run(
+            [sys.executable, "-m", "daybrief", "--json", *args],
+            cwd=repo,
+            env=environment,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return json.loads(result.stdout)
+
+    global_brief = cli("--scope", "global", "Shared global brief")
+    repo_brief = cli("Shared repository brief")
+    deliveries = []
+    for client in EVENTS:
+        root = tmp_path / client
+        install(client, root)
+        settings = json.loads((root / SETTINGS[client]).read_text())
+        event = EVENTS[client][0]
+        entry = settings["hooks"][event][0]
+        command = entry["bash"] if client == "copilot" else entry["hooks"][0]["command"]
+
+        def delivered(directory, command=command, client=client):
+            result = subprocess.run(
+                command,
+                shell=True,
+                input=json.dumps({"cwd": str(directory)}),
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            response = json.loads(result.stdout)
+            text = (
+                response["additionalContext"]
+                if client == "copilot"
+                else response["hookSpecificOutput"]["additionalContext"]
+            )
+            return json.loads(text.split("\n", 1)[1])["briefs"]
+
+        assert {brief["id"] for brief in delivered(repo)} == {global_brief["id"], repo_brief["id"]}
+        assert {brief["id"] for brief in delivered(tmp_path)} == {global_brief["id"]}
+        deliveries.append(delivered)
+    cli("clear")
+    for delivery in deliveries:
+        assert {brief["id"] for brief in delivery(repo)} == {global_brief["id"]}
