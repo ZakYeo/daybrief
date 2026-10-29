@@ -43,12 +43,13 @@ These establish transport, not live model interpretation or obedience.
 
 ## Open feasibility checks
 
-- Verify the desired Codex `/daybrief` spelling in the interactive CLI; the
-  proven `$daybrief` spelling must not silently substitute for it.
+- Codex's native TUI rejects `/daybrief`; the user explicitly approved the
+  verified `$daybrief` spelling instead. `spikes/codex_slash_probe.py` captures
+  the rejection using pexpect 4.9.0 and a disposable configuration.
 - Test refreshing within a continuously running client process, separately
   from the successful resume checks.
 - Finalize refresh coverage during autonomous tool execution and compaction.
-- Finish concrete natural-language grammar and installation/removal design.
+- Parser grammar and installation/removal contracts are in design-decisions.md.
 - Complete independent step 1 review and fixes before starting the foundation.
 
 Existing transcript text remains after withdrawal. The proposed complete
