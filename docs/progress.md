@@ -130,7 +130,7 @@ storage tests after the final fix. Parent aggregate gate passes 31 tests and
 both builds. Commit range ac9fa90 through 7b4ec46; no unresolved blocking
 findings. Review-and-fix gate completed 2026-10-29.
 
-## Step 4 — CLI workflow (in progress)
+## Step 4 — CLI workflow (complete)
 
 Slices and evidence:
 
@@ -154,7 +154,7 @@ passes 43 tests and both builds; reviewer also exercised isolated real CLI
 lifecycle, configuration, timezone, expiry and validation. Step 4 review passed
 2026-10-29 with no blocking findings (306ad55 through fd03b13).
 
-## Step 5 — client adapters (in progress)
+## Step 5 — client adapters (complete)
 
 Slices and evidence:
 
@@ -195,7 +195,7 @@ fix. A clean wheel environment also installed, delivered through, and removed
 all three adapters. No unresolved blocking findings. Step 5 gate completed
 2026-10-29 (14d431d through 2447e66).
 
-## Step 6 — public documentation and identity (in progress)
+## Step 6 — public documentation and identity (complete)
 
 Slices and evidence:
 
@@ -217,7 +217,7 @@ scope consistency. Reviewer independently exercised commands and inspected
 artwork/links/claims. No unresolved blocking findings. Step 6 gate completed
 2026-10-29 (b5c564b through 5f70af7).
 
-## Step 7 — release candidate (in progress)
+## Step 7 — release candidate (complete)
 
 Slices and evidence:
 
@@ -245,7 +245,7 @@ the full 58-test/build gate and clean-wheel validation; parent reran fresh-clone
 passing/failing push verification. No unresolved blocking findings. Step 7 gate
 completed 2026-10-29 (4081bfa through c54df4c).
 
-## Step 8 — personal GitHub publication (in progress)
+## Step 8 — personal GitHub publication (complete)
 
 Slices and evidence:
 
@@ -266,3 +266,17 @@ in 3c20376. GitHub Actions passed for 83463a6 (run 40924472138) and 3c20376
 and banner correctly, and an unauthenticated public clone followed the README
 uv tool install/help/repository quickstart successfully. Final publication
 review remains pending; no package registry publication was attempted.
+
+
+Reviewer `/root/step8_review` passed the public result at b8d83c7, independently
+confirming ZakYeo ownership/public visibility, default branch, description/topics,
+matching published files, README links, banner rendering, complete MIT license
+and successful Actions run 40924820629. No unresolved publication blockers or
+misleading support claims. All eight milestone review-and-fix gates are complete.
+
+Published repository: https://github.com/ZakYeo/daybrief. All work is committed;
+final handoff verifies that the completion-note commit is also pushed and green.
+The supported surface remains the qualified Linux CLI versions. Native clients
+were exercised against synthetic local model endpoints, not paid hosted models.
+No package-registry release, cross-device sync, or instantaneous conversation
+memory erasure is claimed.
