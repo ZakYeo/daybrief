@@ -45,4 +45,7 @@ uses the brief's saved timezone. Use `config set timezone` to change defaults.
 Data lives in `DAYBRIEF_DATA_DIR/state.sqlite` when set, otherwise under
 `$XDG_DATA_HOME/daybrief` or `~/.local/share/daybrief`. History is retained
 indefinitely. Deletion withdraws instructions and is not secure erasure.
-The CLI is implemented; client installation is the next milestone.
+Install or remove client integrations with `daybrief install CLIENT` and
+`daybrief uninstall CLIENT`, where CLIENT is codex, claude, or copilot.
+These commands take `--root DIR` for alternate personal profiles and do not
+accept brief options such as `--scope`. See the [support matrix](support-matrix.md).

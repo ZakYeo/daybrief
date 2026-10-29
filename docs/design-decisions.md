@@ -1,7 +1,8 @@
-# Product decisions proposed for step 1 review
+# Product and implementation decisions
 
-These decisions guide the remaining feasibility work. Adapter design is not
-approved until the spike and independent review are complete.
+These decisions were established during feasibility review and implemented in
+the shared core, CLI and adapters. The [support matrix](support-matrix.md) records
+current native-client verification and limitations.
 
 ## Shared core
 
@@ -70,8 +71,7 @@ Do not execute brief text. JSON encoding and fixed executable arguments carry
 data across process boundaries.
 
 Hook refresh can update context only at supported events. It cannot erase
-transcript history or revoke an action already underway. Exact refresh guarantees
-remain to be established per client through the spike.
+transcript history or revoke an action already underway. The support matrix records the tested refresh events and compaction behavior.
 
 ## Command spelling and natural-language grammar
 
@@ -107,6 +107,6 @@ post-tool refresh for autonomous work, verified during adapter implementation.
 Snapshots are fetched on each supported event; no timer or instant revocation
 claim. Include snapshots even when empty. A storage/read failure must surface
 an error and invalidate the previous snapshot rather than silently asserting
-there are no briefs. Continuous-session/tool-event and compaction verification
-remain implementation acceptance tests in step 5, distinct from step 1's
-demonstrated native transport and resumed-session feasibility.
+there are no briefs. Installed adapters passed continuous-session/tool-event and manual-compaction
+checks in step 5, distinct from step 1's native transport and resumed-session
+feasibility probes. No hosted model was used.

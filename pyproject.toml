@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "daybrief"
 version = "0.1.0"
 description = "Temporary instructions for coding agents, lasting as long as you need."
+readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
 license-files = ["LICENSE"]

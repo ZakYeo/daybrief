@@ -1,6 +1,6 @@
 # Development setup
 
-Daybrief is under construction. Python 3.12 and uv 0.11.21 are the contributor
+Python 3.12 and uv 0.11.21 are the contributor
 baseline. The committed lockfile fixes development dependencies.
 
 ```sh
