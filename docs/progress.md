@@ -107,3 +107,10 @@ data-directory precedence, named timezone discovery, and validated defaults.
 Real temporary Git repositories verify nested paths, shared worktree identity,
 separate clone identity, and explicit failure outside a repository. Full gate
 passes 17 tests. SQLite persistence is next.
+
+SQLite slice adds versioned transactional schema creation, validated record and
+configuration storage, scoped active/history selection, and optimistic revision
+checks. Full gate passes 22 tests. Evidence covers rollback, stale writes,
+32 concurrent increments without loss, scope/expiry/deletion filtering,
+malformed records, lock timeout, and preservation of corrupt/unknown-version
+files. Lifecycle orchestration and independent step review remain pending.
