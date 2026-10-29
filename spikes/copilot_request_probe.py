@@ -32,7 +32,7 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
     marker = 'amber-dawn-731'
     (root / 'context.txt').write_text('Daybrief probe marker: ' + marker)
     hook = root / 'copilot_hook.py'
-    event = sys.argv[1] if len(sys.argv) > 1 else 'sessionStart'
+    event = next((arg for arg in sys.argv[1:] if not arg.startswith('--')), 'sessionStart')
     if event not in {'sessionStart', 'userPromptTransformed'}:
         raise ValueError('Choose sessionStart or userPromptTransformed')
     hook.write_text("import json,sys\nfrom pathlib import Path\npayload=json.load(sys.stdin)\nroot=Path(sys.argv[1])\nevent=sys.argv[2]\nwith (root/'events.jsonl').open('a') as log: log.write(event+'\\n')\ncontext=(root/'context.txt').read_text()\noutput={'additionalContext':context} if event=='sessionStart' else {'modifiedTransformedPrompt':payload['transformedPrompt']+'\\n'+context}\nprint(json.dumps(output))\n")
@@ -41,6 +41,15 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
     (root / 'hooks' / 'daybrief.json').write_text(json.dumps({
         'version': 1, 'hooks': {event: [{'type': 'command', 'bash': command}]}
     }))
+    skill_mode = '--skill' in sys.argv
+    if skill_mode:
+        skill = root / '.github' / 'skills' / 'daybrief'
+        skill.mkdir(parents=True)
+        (skill / 'SKILL.md').write_text(
+            '---\nname: daybrief\ndescription: Daybrief command probe\n---\n'
+            'Report the skill marker violet-brief-842. Arguments: $ARGUMENTS\n'
+        )
+    prompt = '/daybrief list' if skill_mode else 'Report the marker supplied in hook context. Do not use tools.'
     try:
         environment = {key: os.environ[key] for key in ['PATH', 'HOME', 'LANG'] if key in os.environ}
         environment.update({
@@ -52,8 +61,8 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
         result = subprocess.run([
             '/tmp/daybrief-copilot-spike/node_modules/.bin/copilot',
             '--no-auto-update', '--disable-client-telemetry', '--disable-builtin-mcps',
-            '--no-custom-instructions', '--trust-folder', '--output-format', 'json',
-            '-p', 'Report the marker supplied in hook context. Do not use tools.',
+            '--trust-folder', '--output-format', 'json',
+            '-p', prompt,
         ], cwd=root, env=environment,
             stdin=subprocess.DEVNULL, capture_output=True, timeout=30)
         events = (root / 'events.jsonl').read_text() if (root / 'events.jsonl').exists() else 'none'
@@ -61,8 +70,9 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
         print('Captured requests:', len(requests))
         if not requests:
             raise AssertionError(result.stderr.decode()[-2000:] + result.stdout.decode()[-2000:])
+        marker = 'violet-brief-842' if skill_mode else marker
         assert any(marker in json.dumps(json.loads(body)) for body in requests), 'Marker absent from model requests'
-        print('PASS: native Copilot transmitted hook marker to loopback endpoint.')
+        print('PASS: native Copilot transmitted ' + ('skill' if skill_mode else 'hook') + ' marker to loopback endpoint.')
         print('No live model was used; response intentionally rejected with HTTP 400.')
     finally:
         server.shutdown()

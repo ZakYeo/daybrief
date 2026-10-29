@@ -145,3 +145,20 @@ states that command-hook output from `userPromptSubmitted` is dropped. Therefore
 use `userPromptTransformed` to preserve the existing transformed prompt and
 append a current Daybrief snapshot. The spike verifies this path independently
 of session context. Running-session multi-turn replacement remains to be tested.
+
+### Command registration checks
+
+`python3 spikes/claude_request_probe.py --skill` passes for Claude 2.1.312:
+an isolated user skill named `daybrief` expands `/daybrief list`, transmitting
+the unique skill-body marker to the captured request. The user setting source
+must be enabled (it points at the temporary configuration directory).
+
+`python3 spikes/copilot_request_probe.py --skill` currently fails its stronger
+skill-body assertion. Tested both temporary personal and trusted project skill
+paths; the current probe uses `.github/skills/daybrief/SKILL.md`. The marker is
+absent from the first captured request. This does not establish unsupported
+skills: Copilot may defer reading the body to a tool call, which the rejecting
+endpoint cannot exercise. Investigate native skill discovery and a successful
+mock response/tool cycle before claiming command registration. The optional
+failing spike is deliberately retained to make the unresolved requirement
+reproducible; ordinary hook mode remains separate.

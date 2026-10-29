@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import shlex
+import sys
 import subprocess
 import tempfile
 import threading
@@ -35,6 +36,15 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
         event: [{'hooks': [{'type': 'command', 'command': command}]}]
         for event in ['SessionStart', 'UserPromptSubmit']
     }}))
+    skill_mode = '--skill' in sys.argv
+    if skill_mode:
+        skill = root / 'skills' / 'daybrief'
+        skill.mkdir(parents=True)
+        (skill / 'SKILL.md').write_text(
+            '---\nname: daybrief\ndescription: Daybrief command probe\n---\n'
+            'Report the skill marker violet-brief-842. Arguments: $ARGUMENTS\n'
+        )
+    prompt = '/daybrief list' if skill_mode else 'Report the marker supplied in hook context. Do not use tools.'
     try:
         environment = {key: os.environ[key] for key in ['PATH', 'HOME', 'LANG'] if key in os.environ}
         environment.update({
@@ -46,9 +56,9 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
         })
         result = subprocess.run([
             'claude', '-p', '--settings', str(root / 'settings.json'),
-            '--setting-sources', '', '--strict-mcp-config', '--tools', '',
+            '--setting-sources', 'user', '--strict-mcp-config', '--tools', '',
             '--output-format', 'json',
-            'Report the marker supplied in hook context. Do not use tools.',
+            prompt,
         ], cwd=root, env=environment,
             stdin=subprocess.DEVNULL, capture_output=True, timeout=30)
         events = (root / 'events.jsonl').read_text() if (root / 'events.jsonl').exists() else 'none'
@@ -56,8 +66,9 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
         print('Captured requests:', len(requests))
         if not requests:
             raise AssertionError(result.stderr.decode()[-2000:] + result.stdout.decode()[-2000:])
+        marker = 'violet-brief-842' if skill_mode else marker
         assert any(marker in json.dumps(json.loads(body)) for body in requests), 'Marker absent from model requests'
-        print('PASS: native Claude transmitted hook marker to loopback endpoint.')
+        print('PASS: native Claude transmitted ' + ('skill' if skill_mode else 'hook') + ' marker to loopback endpoint.')
         print('No live model was used; response intentionally rejected with HTTP 400.')
     finally:
         server.shutdown()
