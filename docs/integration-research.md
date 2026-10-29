@@ -70,3 +70,19 @@ was produced. Temporary directory: `/tmp/daybrief-spike-o_dzu4_t`.
 This establishes neither successful discovery nor a hook incompatibility.
 Next investigate startup/authentication and obtain actual native delivery
 evidence before closing the spike. Codex and Copilot native checks are pending.
+
+### Native discovery follow-up
+
+Codex 0.165.0 with a fresh temporary configuration executed `SessionStart`
+and the probe logged that event. Its subsequent API websocket connection
+failed with `Operation not permitted`; the client was terminated at 30 seconds.
+The isolated probe trusted only its fixed hook for that invocation. No user
+settings or credentials were copied. Evidence directory:
+`/tmp/daybrief-codex-qvi85509`. Reproduce with
+`python3 spikes/native_codex_probe.py` (which also closes input explicitly).
+This proves native discovery/execution, not receipt by a model or prompt refresh.
+
+Claude with `CLAUDE_CONFIG_DIR` pointing to a fresh temporary directory exited 1
+with `authentication_failed` and no hook events. This distinguishes the
+authentication failure from the earlier unexplained startup timeout. Live
+Claude delivery and all Copilot native checks remain pending.
