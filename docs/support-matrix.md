@@ -16,7 +16,8 @@ Daybrief uses `userPromptTransformed` and preserves the original prompt.
 
 ## Setup and removal
 
-Install Daybrief into a persistent environment first, then run:
+Install Daybrief into a persistent virtual environment (for example with
+`uv tool install`) first, then run:
 
 ```sh
 daybrief install codex
@@ -37,7 +38,10 @@ Codex merges `hooks.json`; Claude merges `settings.json`; Copilot gets
 `hooks/daybrief.json`. No project instruction file is modified.
 
 Rerun installation after moving/reinstalling Daybrief: hooks and skills reference
-the installing Python environment by absolute path. The manifest
+the installing Python environment by absolute path. Python isolated mode prevents
+repository files and `PYTHONPATH` from shadowing Daybrief. User-site-only
+(`pip install --user`) installations are unsupported; installation checks this
+before writing client configuration. The manifest
 `.daybrief-install.json` records owned entries and the skill hash. Installation
 refuses unowned collisions, malformed settings, symlinks in managed paths, and
 modified owned content. Preserve or restore your edits before trying again;

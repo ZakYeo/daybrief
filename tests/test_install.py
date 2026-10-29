@@ -104,3 +104,49 @@ def test_failed_install_write_rolls_back(tmp_path, monkeypatch):
         apply_changes({first: b"changed", second: b"new"})
     assert first.read_bytes() == b"original"
     assert not second.exists()
+
+
+def test_generated_commands_ignore_cwd_and_pythonpath_shadowing(tmp_path):
+    import os
+    import subprocess
+
+    root = tmp_path / "profile"
+    work = tmp_path / "work"
+    injected = tmp_path / "injected"
+    work.mkdir()
+    injected.mkdir()
+    shadow = 'raise RuntimeError("LOCAL_MODULE_EXECUTED")\n'
+    (work / "daybrief.py").write_text(shadow)
+    (injected / "daybrief.py").write_text(shadow)
+    install("codex", root)
+    environment = dict(
+        os.environ, PYTHONPATH=str(injected), DAYBRIEF_DATA_DIR=str(tmp_path / "data"), TZ="UTC"
+    )
+    settings = json.loads((root / SETTINGS["codex"]).read_text())
+    command = settings["hooks"]["SessionStart"][0]["hooks"][0]["command"]
+    result = subprocess.run(
+        command,
+        shell=True,
+        input=json.dumps({"cwd": str(work)}),
+        cwd=work,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert (
+        "daybrief_snapshot_at"
+        in json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
+    )
+    skill = (root / SKILL).read_text()
+    command = skill.split("```sh\n", 1)[1].split("\n```", 1)[0]
+    result = subprocess.run(
+        command + " --scope global --json 'Isolated skill command'",
+        shell=True,
+        cwd=work,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert json.loads(result.stdout)["message"] == "Isolated skill command"

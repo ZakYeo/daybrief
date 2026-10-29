@@ -5,6 +5,7 @@ import fcntl
 import hashlib
 import os
 import shlex
+import subprocess
 import sys
 from importlib.resources import files
 from pathlib import Path
@@ -27,7 +28,7 @@ def default_root(client: str) -> Path:
 def hook_entries(client: str) -> dict[str, list[dict[str, Any]]]:
     result = {}
     for event in EVENTS[client]:
-        command = shlex.join([sys.executable, "-m", "daybrief.hooks", client, event])
+        command = shlex.join([sys.executable, "-I", "-m", "daybrief.hooks", client, event])
         if client == "copilot":
             entry: dict[str, Any] = {"type": "command", "bash": command}
         else:
@@ -77,6 +78,18 @@ def merge_hooks(settings: dict[str, Any], old: dict[str, Any], new: dict[str, An
 
 
 def install(client: str, root: Path, *, remove: bool = False) -> None:
+    if not remove:
+        probe = subprocess.run(
+            [sys.executable, "-I", "-c", "import daybrief; print(daybrief.__file__)"],
+            capture_output=True,
+            text=True,
+        )
+        expected = Path(__file__).with_name("__init__.py").resolve()
+        if probe.returncode or Path(probe.stdout.strip()).resolve() != expected:
+            raise ValueError(
+                "Install Daybrief in a persistent virtual environment (for example uv tool "
+                "install); this interpreter cannot load this package in isolated mode."
+            )
     root = root.expanduser().resolve()
     root.mkdir(parents=True, exist_ok=True)
     lock = checked_path(root, ".daybrief-install.lock")
@@ -119,7 +132,7 @@ def _install(client: str, root: Path, *, remove: bool) -> None:
         settings_content = encoded(settings) if settings or settings_existed else None
         apply_changes({settings_path: settings_content, skill_path: None, manifest_path: None})
         return
-    command = shlex.join([sys.executable, "-m", "daybrief"])
+    command = shlex.join([sys.executable, "-I", "-m", "daybrief"])
     skill = (
         files("daybrief").joinpath("resources/SKILL.md").read_text().replace("@COMMAND@", command)
     )

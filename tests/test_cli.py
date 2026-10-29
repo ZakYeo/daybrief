@@ -69,3 +69,14 @@ def test_cli_scopes_and_timezone_overrides(tmp_path: Path) -> None:
     assert changed_zone["timezone"] == "UTC"
     assert call("clear")["cleared"] == 1
     assert [item["id"] for item in call("list")] == [global_brief["id"]]
+
+
+def test_installer_commands_with_leading_options_do_not_create_briefs(tmp_path):
+    for command in ("install", "uninstall"):
+        result = invoke(tmp_path, "--scope", "global", command, "codex")
+        assert result.returncode == 2
+        assert "without brief options" in result.stderr
+        assert not (tmp_path / "data" / "state.sqlite").exists()
+    result = invoke(tmp_path, "--scope", "global", "create", "install codex")
+    assert result.returncode == 0
+    assert json.loads(result.stdout)["message"] == "install codex"

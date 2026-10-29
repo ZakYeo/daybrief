@@ -16,7 +16,18 @@ from daybrief.parsing import deadline, duration, message_expiry
 from daybrief.service import Daybrief
 from daybrief.storage import StorageError, Store
 
-COMMANDS = {"create", "list", "show", "edit", "extend", "delete", "clear", "config"}
+COMMANDS = {
+    "create",
+    "list",
+    "show",
+    "edit",
+    "extend",
+    "delete",
+    "clear",
+    "config",
+    "install",
+    "uninstall",
+}
 
 
 def parser() -> argparse.ArgumentParser:
@@ -133,6 +144,8 @@ def configure(app: Daybrief, words: list[str]) -> Config:
 def dispatch(args: argparse.Namespace) -> object:
     words = list(args.words)
     command = words.pop(0) if words and words[0] in COMMANDS else "create"
+    if command in ("install", "uninstall"):
+        raise ValueError(f"Use daybrief {command} CLIENT [--root DIR], without brief options.")
     if command not in ("create", "edit") and (args.lifetime or args.until or args.literal):
         raise ValueError("Expiry flags and --literal apply only to create and edit.")
     if args.all and command != "list":

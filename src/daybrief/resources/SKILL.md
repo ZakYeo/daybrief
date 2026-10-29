@@ -18,7 +18,9 @@ or interpolate it into shell syntax. Use explicit `create` for messages beginnin
 with a command name. Respect the user's selected scope; default mutations target
 the configured scope (initially the current repository). Reads normally include
 both repository and global briefs. `clear` affects only the selected scope.
-Outside Git, ask which repository or whether global scope is intended before saving.
+Outside Git, if the effective mutation scope is repo, ask which repository or
+whether global scope is intended before saving. An explicit or configured global
+scope already resolves that choice; proceed without asking again.
 
 Translate clear expiry requests to `--for` or `--until`, or use the deterministic
 trailing phrases `today`, `for 2 days`, `Have this last one month.`, and
