@@ -195,3 +195,9 @@ These tests verify resumed-session transport. They do not establish that a
 continuously running interactive session refreshes correctly, or that a live
 model obeys the withdrawal. They deliberately retain old transcript text: the
 new snapshot must communicate that prior Daybrief instructions no longer apply.
+
+`python3 spikes/claude_refresh_probe.py` now passes the equivalent Claude
+2.1.312 check. It verifies that the returned session ID stays the same and that
+requests made after resuming carry the withdrawal. The endpoint returns fixed
+Anthropic-format stream events, without contacting a live model. Current
+evidence and unresolved checks are consolidated in `support-matrix.md`.
