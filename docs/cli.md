@@ -6,13 +6,13 @@ the local IANA timezone, current repository scope, and next local midnight.
 Outside a Git repository, use `--scope global` for mutations.
 
 ```sh
-daybrief --scope global --for 1mo Use the staging API.
+daybrief --scope global --for 1mo "Use the staging API."
 daybrief list
 daybrief show ID
-daybrief edit ID Updated guidance.
-daybrief extend ID 2 days
-daybrief delete ID
-daybrief clear
+daybrief --scope global edit ID "Updated guidance."
+daybrief --scope global extend ID 2 days
+daybrief --scope global delete ID
+daybrief --scope global clear
 daybrief list --all
 daybrief config
 daybrief config set timezone Europe/London
