@@ -85,16 +85,24 @@ def message_expiry(
     """Recognize trailing expiry phrases without interpreting arbitrary prose."""
     if literal:
         return ParsedMessage(message)
-    match = re.search(
-        r"\s+(have this last|for|until)\s+(.+?)\.?$|\s+(today)\.?$", message, re.IGNORECASE
+    units = "|".join(sorted((*UNITS, "mo", "month", "months"), key=len, reverse=True))
+    pattern = (
+        r"\s+(have this last|until)\s+"
+        rf"|\s+(for)\s+(?=(?:\d+|one|an?)\s*(?:{units})\b)"
+        r"|\s+(today)\.?$"
     )
-    if not match:
+    candidates = list(re.finditer(pattern, message, re.IGNORECASE))
+    if not candidates:
         return ParsedMessage(message)
+    if len(candidates) > 1:
+        raise ValueError(
+            "Multiple expiry phrases; choose one or use --literal with an explicit flag."
+        )
+    match = candidates[0]
     prefix = message[: match.start()].rstrip()
-    kind, value, today = match.groups()
-    # Ordinary prose containing 'for' is not necessarily a lifetime expression.
-    if kind and kind.lower() == "for" and not re.match(r"\d|one\b|an?\b", value, re.IGNORECASE):
-        return ParsedMessage(message)
+    kind = match[1] or match[2]
+    today = match[3]
+    value = message[match.end() :].strip().removesuffix(".")
     if explicit:
         raise ValueError(
             "Conflicting expiry phrase and explicit flag; use --literal to keep the text."

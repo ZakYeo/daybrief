@@ -20,7 +20,27 @@ COMMANDS = {"create", "list", "show", "edit", "extend", "delete", "clear", "conf
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(
-        prog="daybrief", description="Temporary instructions for coding agents."
+        prog="daybrief",
+        description="Temporary instructions for coding agents.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Commands:
+  create MESSAGE            Create a brief (create may be omitted)
+  list [--all]              List applicable briefs; --all includes history
+  show ID                   Inspect a brief
+  edit ID MESSAGE           Edit, preserving expiry unless overridden
+  extend ID DURATION        Add time to the existing expiry
+  delete ID                 Withdraw a brief
+  clear                     Withdraw active briefs in the selected scope
+  config                    Show defaults
+  config set timezone ZONE  Set an IANA timezone
+  config set scope SCOPE    Set repo or global as the default
+  config set expiry VALUE   Set today (next midnight) or a duration
+
+Examples:
+  daybrief "Focus on checkout today"
+  daybrief --scope global --for 1mo "Use staging"
+  daybrief edit ID "Use fixtures" --until 2027-03-04T17:00
+  daybrief extend ID 2 days""",
     )
     result.add_argument("--scope", choices=("repo", "global"))
     result.add_argument("--timezone", help="IANA timezone override")

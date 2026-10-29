@@ -40,3 +40,14 @@ def test_ambiguity_conflicts_and_literal_escape() -> None:
     text = "Wait until further notice"
     assert message_expiry(text, NOW, ZONE, literal=True).message == text
     assert message_expiry("Use fixtures for integration tests", NOW, ZONE).message.endswith("tests")
+
+
+def test_ordinary_for_phrase_does_not_hide_expiry_or_require_literal() -> None:
+    assert message_expiry("Focus on checkout for a demo", NOW, ZONE).message.endswith("for a demo")
+    today = message_expiry("Use fixtures for tests today", NOW, ZONE)
+    assert today.message == "Use fixtures for tests"
+    assert today.until == datetime(2026, 10, 30, tzinfo=UTC)
+    month = message_expiry("Use staging for tests. Have this last one month.", NOW, ZONE)
+    assert month.duration is not None and month.duration.months == 1
+    with pytest.raises(ValueError, match="Multiple"):
+        message_expiry("Use staging for 2 days today", NOW, ZONE)
