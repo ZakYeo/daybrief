@@ -80,7 +80,7 @@ preservation tests. Parent gate passes four tests, formatting/lint/typing and
 both distribution builds. Commits cbffff2 through aff4e96; no unresolved
 blocking findings. Review-and-fix gate completed 2026-10-29.
 
-## Step 3 — shared core (next)
+## Step 3 — shared core (in progress)
 
 Slices and evidence:
 
@@ -95,3 +95,9 @@ Slices and evidence:
    controlled clock; active selection always filters expiry/deletion.
 4. Run the aggregate gate and obtain fresh independent review; resolve findings
    before beginning the CLI workflow.
+
+First slice implements immutable brief state, a clock boundary, and pure
+instant/calendar arithmetic. Full gate passes 13 tests, including DST gaps and
+folds, 23/25-hour local days, fixed elapsed days, leap/month-end clamping, the
+product's one-month example, and exact expiry. Persistence and lifecycle
+services remain pending; no step review requested yet.
