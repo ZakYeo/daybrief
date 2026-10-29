@@ -185,3 +185,23 @@ excluded from conversation-turn checks. Profiles and HOME are disposable.
 Shared-store subprocess coverage verifies all installed client hooks read the same
 CLI-created IDs and apply repository/global scope correctly. Full gate: 56 tests
 and both builds. Support/setup/evidence details are in docs/support-matrix.md.
+
+Reviewer `/root/step5_review` passed the milestone after 2447e66. Fixes isolate
+Python imports from repository/PYTHONPATH shadowing, reject misplaced installer
+options without creating a brief, and respect an already-selected global scope
+in the skill. The full gate passes 58 tests/builds; the reviewer reran 18 affected
+tests. All three native installed-skill/post-tool checks passed again after the
+fix. A clean wheel environment also installed, delivered through, and removed
+all three adapters. No unresolved blocking findings. Step 5 gate completed
+2026-10-29 (14d431d through 2447e66).
+
+## Step 6 — public documentation and identity (in progress)
+
+Slices and evidence:
+
+1. Generate an original wide banner using built-in imagegen; inspect the actual
+   saved asset and record prompt/provenance and light/dark readability.
+2. Write README onboarding, real command demonstration, operational references
+   and CONTRIBUTING; verify copyable setup against the built artifact.
+3. Check local links/assets and documentation accuracy, then fresh independent
+   review and fixes before release-candidate validation.
