@@ -44,7 +44,7 @@ is claimed. Continuous/tool/compaction refresh, installation preservation, and
 live model smoke checks remain explicit step 5 acceptance work. Research spikes
 must not become the production adapter architecture.
 
-## Step 2 — foundation (in progress)
+## Step 2 — foundation (complete)
 
 Slices and evidence:
 
@@ -71,3 +71,27 @@ installed hooks and pushed successfully to a temporary bare remote; an
 intentional formatting error then blocked creation of a second remote branch.
 `scripts/verify_push_hook.py` preserves that integration procedure. Step 2 is
 ready for its independent review; no shared-core work has begun.
+
+Independent reviewer `/root/step2_review` passed the step after aff4e96.
+Its sole blocking finding was silent disabling of executable default Git hooks;
+setup now refuses with manual-integration guidance and regression coverage.
+Reviewer reran the aggregate gate, fresh-clone push verification, and updated
+preservation tests. Parent gate passes four tests, formatting/lint/typing and
+both distribution builds. Commits cbffff2 through aff4e96; no unresolved
+blocking findings. Review-and-fix gate completed 2026-10-29.
+
+## Step 3 — shared core (next)
+
+Slices and evidence:
+
+1. Pure time arithmetic and typed domain model with injectable clock. Test
+   local-midnight/DST boundaries, calendar month clamping, fixed durations,
+   ambiguous/nonexistent local times, and exact expiry boundaries.
+2. Repository identity, data-path/configuration rules, SQLite schema and
+   transactional persistence. Test worktree identity, scope isolation, unknown
+   schema/corrupt state, and concurrent writers without lost updates.
+3. Lifecycle service for creation, selection, editing, extension, withdrawal,
+   history and scoped clear. Test all decisions through an isolated store and
+   controlled clock; active selection always filters expiry/deletion.
+4. Run the aggregate gate and obtain fresh independent review; resolve findings
+   before beginning the CLI workflow.
