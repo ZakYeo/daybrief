@@ -55,3 +55,18 @@ documents personal and project skills, explicit slash-name invocation, and
 
 Architecture and product decisions remain pending the spike. No step 2 work
 should begin before the complete step 1 review gate.
+
+## Initial executable evidence
+
+`python3 spikes/check_hook_probe.py` passes four subprocess envelope checks.
+The probe reads context from a disposable directory and logs event names only.
+It does not implement persistence or claim model delivery.
+
+A native Claude Code 2.1.312 print-mode attempt used an explicit temporary
+settings file, empty setting sources, strict MCP configuration, and no tools.
+SessionStart and UserPromptSubmit were configured to invoke this probe.
+The subprocess timed out after 40 seconds and was terminated; no event log
+was produced. Temporary directory: `/tmp/daybrief-spike-o_dzu4_t`.
+This establishes neither successful discovery nor a hook incompatibility.
+Next investigate startup/authentication and obtain actual native delivery
+evidence before closing the spike. Codex and Copilot native checks are pending.
