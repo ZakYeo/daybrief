@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "daybrief"
+version = "0.1.0"
+description = "Temporary instructions for coding agents, lasting as long as you need."
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "ZakYeo"}]
+
+[dependency-groups]
+dev = ["hatchling>=1.27,<2", "mypy>=1.15,<2", "pytest>=8,<10", "ruff>=0.11,<1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/daybrief"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["spikes"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "scripts"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
