@@ -167,3 +167,12 @@ Slices and evidence:
    distinguish simulated transport from hosted-model smoke evidence.
 4. Document tested refresh guarantees, run the full gate, and obtain fresh
    independent review before public-facing documentation.
+
+Snapshot delivery (5e531aa) and personal installers (62ec038) pass the full
+55-test gate and both builds. Packaged skill passes the skill-creator validator.
+Isolated native probes now verify all three installed skills and hook delivery,
+including actual CLI deletion through a synthetic model tool call followed by an
+empty post-tool snapshot in the same running process. Codex uses `$daybrief`;
+Claude and Copilot use `/daybrief`. The Copilot probe needed explicit permission
+for its temporary Python executable path; no production permission setting changed.
+No hosted model was used. Continuous user-turn and compaction checks remain.
