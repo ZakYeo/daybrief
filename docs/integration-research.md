@@ -86,3 +86,22 @@ Claude with `CLAUDE_CONFIG_DIR` pointing to a fresh temporary directory exited 1
 with `authentication_failed` and no hook events. This distinguishes the
 authentication failure from the earlier unexplained startup timeout. Live
 Claude delivery and all Copilot native checks remain pending.
+
+### Codex request capture — passed
+
+`python3 spikes/codex_request_probe.py` starts an ephemeral loopback HTTP
+endpoint and runs the real Codex 0.165.0 executable against it with a fresh
+configuration and no authentication. Both `SessionStart` and `UserPromptSubmit`
+executed. The captured model request contained `amber-dawn-731`, which was
+present only in hook context, not the user prompt. The endpoint deliberately
+returns HTTP 400 after capture; no live model is involved. The check fails if
+no request arrives or the marker is absent.
+
+Local socket binding required sandbox escalation in this environment. The
+successful run completed in under a second. This is stronger than an envelope
+fixture: the native client actually assembled and transmitted the context.
+It does not prove model compliance, same-conversation refresh, or independent
+delivery from each event (both currently provide the same marker).
+
+Provider configuration follows the official
+[advanced configuration reference](https://learn.chatgpt.com/docs/config-file/config-advanced).
