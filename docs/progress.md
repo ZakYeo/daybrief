@@ -80,7 +80,7 @@ preservation tests. Parent gate passes four tests, formatting/lint/typing and
 both distribution builds. Commits cbffff2 through aff4e96; no unresolved
 blocking findings. Review-and-fix gate completed 2026-10-29.
 
-## Step 3 — shared core (in progress)
+## Step 3 — shared core (complete)
 
 Slices and evidence:
 
@@ -122,3 +122,21 @@ extension relative to prior expiry, exact expiry filtering, deleted-state
 immutability, rollback on invalid creation and scope isolation. Aggregate gate
 passes 27 tests and both builds. The shared core is ready for step 3 review;
 CLI implementation has not begun.
+
+Independent reviewer `/root/step3_review` passed the step after 6809b4a and
+7b4ec46, which reject malformed deletion timestamps and normalize missing
+database-column errors. Reviewer verified the full gate and reran all nine
+storage tests after the final fix. Parent aggregate gate passes 31 tests and
+both builds. Commit range ac9fa90 through 7b4ec46; no unresolved blocking
+findings. Review-and-fix gate completed 2026-10-29.
+
+## Step 4 — CLI workflow (in progress)
+
+Slices and evidence:
+
+1. Deterministic duration/deadline and bounded natural-language interpretation;
+   test explicit forms, product examples, ambiguity and conflicts.
+2. Thin CLI dispatch and output for all lifecycle/config commands; isolated
+   subprocess tests verify scope, exact timezone/expiry, history and errors.
+3. Install built artifact and exercise real commands; run the aggregate gate,
+   then fresh independent review and fixes before adapters.
