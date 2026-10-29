@@ -205,3 +205,25 @@ Slices and evidence:
    and CONTRIBUTING; verify copyable setup against the built artifact.
 3. Check local links/assets and documentation accuracy, then fresh independent
    review and fixes before release-candidate validation.
+
+Original banner committed in d221777: built-in imagegen, 2172×724 opaque RGB,
+lossless optimization, exact prompt/provenance recorded. Browser inspection at
+900px on white and near-black backgrounds passed; decoded pixels match the
+original. README/CONTRIBUTING and metadata committed in 1de7bdc. Relative links
+resolve; full gate passes 58 tests/builds. Isolated HOME/uv tool setup followed
+README install, help, repository quickstart, all adapters and package removal.
+Reviewer `/root/step6_review` passed after 5f70af7 fixed the command guide's
+scope consistency. Reviewer independently exercised commands and inspected
+artwork/links/claims. No unresolved blocking findings. Step 6 gate completed
+2026-10-29 (b5c564b through 5f70af7).
+
+## Step 7 — release candidate (in progress)
+
+Slices and evidence:
+
+1. Run aggregate gate; inspect wheel/sdist contents, runtime dependency metadata,
+   licenses and attribution, and excluded runtime/personal data.
+2. Reproduce onboarding and lifecycle from the built wheel in a clean environment;
+   verify hooks from a fresh committed checkout, including pass/fail paths.
+3. Recheck native installed adapters from the release artifact, record exact
+   evidence, and obtain fresh independent review before publication.
