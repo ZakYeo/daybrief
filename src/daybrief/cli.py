@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 from daybrief.config import Config
 from daybrief.context import data_directory, local_timezone, repository_scope
+from daybrief.install import main as installation_main
 from daybrief.model import Brief
 from daybrief.parsing import deadline, duration, message_expiry
 from daybrief.service import Daybrief
@@ -35,6 +36,8 @@ def parser() -> argparse.ArgumentParser:
   config set timezone ZONE  Set an IANA timezone
   config set scope SCOPE    Set repo or global as the default
   config set expiry VALUE   Set today (next midnight) or a duration
+  install CLIENT [--root DIR]    Install codex, claude, or copilot integration
+  uninstall CLIENT [--root DIR]  Remove owned integration files and hooks
 
 Examples:
   daybrief "Focus on checkout today"
@@ -203,6 +206,9 @@ def dispatch(args: argparse.Namespace) -> object:
 
 def main() -> None:
     try:
+        if len(sys.argv) > 1 and sys.argv[1] in ("install", "uninstall"):
+            installation_main(sys.argv[1:])
+            return
         args = parser().parse_intermixed_args()
         emit(dispatch(args), args.json, details=bool(args.words and args.words[0] == "show"))
     except (ValueError, KeyError, StorageError, OSError, OverflowError) as error:
