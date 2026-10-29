@@ -177,3 +177,21 @@ now initializes a real temporary Git repository and exercises the tool cycle.
 `python3 spikes/codex_request_probe.py --skill` also passes using the documented
 `$daybrief list` skill mention. This verifies the skill entry point; the desired
 bare `/daybrief` CLI alias is still unverified and must not be advertised yet.
+
+### Two-turn withdrawal transport — Codex and Copilot passed
+
+`python3 spikes/codex_refresh_probe.py` runs Codex against a local synthetic
+successful endpoint, captures an initial brief, changes hook data to an explicit
+withdrawal snapshot, and resumes the same thread ID. The second request includes
+the withdrawal. Both native invocations exit successfully.
+
+`python3 spikes/copilot_refresh_probe.py` does the same with Copilot 1.0.105,
+resuming the session ID emitted by the first turn. It uses only the
+`userPromptTransformed` hook, so the result demonstrates refresh independently
+of session-start injection. Both invocations succeed and the second request
+contains the withdrawal snapshot.
+
+These tests verify resumed-session transport. They do not establish that a
+continuously running interactive session refreshes correctly, or that a live
+model obeys the withdrawal. They deliberately retain old transcript text: the
+new snapshot must communicate that prior Daybrief instructions no longer apply.
