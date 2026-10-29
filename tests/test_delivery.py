@@ -1,0 +1,71 @@
+import json
+import os
+import subprocess
+import sys
+from datetime import UTC, datetime, timedelta
+
+from daybrief.config import Config
+from daybrief.delivery import snapshot
+from daybrief.hooks import EVENTS, envelope
+from daybrief.service import Daybrief
+from daybrief.storage import Store
+from daybrief.time import Duration
+
+
+class Clock:
+    def __init__(self):
+        self.value = datetime(2026, 10, 29, 12, tzinfo=UTC)
+
+    def now(self):
+        return self.value
+
+
+def test_snapshot_lifecycle_and_exact_expiry(tmp_path):
+    clock = Clock()
+    app = Daybrief(Store(tmp_path / "db"), Config("Europe/London"), clock)
+    brief = app.create("Use fixtures; $(touch /tmp/not-executed)", "global", duration=Duration(60))
+    first = snapshot(app, tmp_path)
+    data = json.loads(first.split("\n", 1)[1])
+    assert data["briefs"][0]["message"] == brief.message
+    assert data["briefs"][0]["timezone"] == "Europe/London"
+    app.edit(brief.id, "global", "Updated guidance")
+    assert "Updated guidance" in snapshot(app, tmp_path)
+    assert brief.message not in snapshot(app, tmp_path)
+    clock.value += timedelta(seconds=60)
+    expired = snapshot(app, tmp_path)
+    assert json.loads(expired.split("\n", 1)[1])["briefs"] == []
+    assert "withdraws all earlier briefs" in expired
+    app.extend(brief.id, "global", Duration(60))
+    assert brief.id in snapshot(app, tmp_path)
+    app.delete(brief.id, "global")
+    assert brief.id not in snapshot(app, tmp_path)
+
+
+def test_native_envelopes_preserve_prompt():
+    for client, events in EVENTS.items():
+        for event in events:
+            result = envelope(client, event, {"transformedPrompt": "Original\nrequest"}, "snapshot")
+            if event == "userPromptTransformed":
+                assert result["modifiedTransformedPrompt"] == "Original\nrequest\n\nsnapshot"
+            elif client == "copilot":
+                assert result == {"additionalContext": "snapshot"}
+            else:
+                assert result["hookSpecificOutput"]["additionalContext"] == "snapshot"
+
+
+def test_hook_read_failure_invalidates_stale_context(tmp_path):
+    (tmp_path / "state.sqlite").write_text("corrupt database")
+    result = subprocess.run(
+        [sys.executable, "-m", "daybrief.hooks", "codex", "UserPromptSubmit"],
+        input=json.dumps({"cwd": str(tmp_path)}),
+        capture_output=True,
+        text=True,
+        env=dict(os.environ, DAYBRIEF_DATA_DIR=str(tmp_path)),
+    )
+    assert result.returncode == 0
+    context = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
+    assert "UNAVAILABLE" in context
+    assert "Invalidate all previous" in context
+    assert "does not mean none exist" in context
+    assert "daybrief:" in result.stderr
+    assert (tmp_path / "state.sqlite").read_text() == "corrupt database"
