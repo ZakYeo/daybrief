@@ -128,3 +128,20 @@ The binary reports GitHub Copilot CLI 1.0.105. Set
 loader otherwise tries to extract into the user's cache, which is read-only
 in this sandbox. No global package installation was performed.
 Native Copilot delivery is still untested.
+
+### Copilot request capture — passed
+
+Native Copilot CLI 1.0.105 now passes the isolated loopback request check:
+`python3 spikes/copilot_request_probe.py` tests `sessionStart`, and
+`python3 spikes/copilot_request_probe.py userPromptTransformed` tests prompt
+refresh separately. Each ran its configured hook and transmitted the hook-only
+marker in one captured request. The endpoint intentionally rejects the request;
+no real model or account is involved. Provider environment variables follow the
+installed CLI's `copilot help providers`. The probe uses the temporary install
+and cache paths above; it is a spike, not a portable installed test suite.
+
+The [hook reference](https://docs.github.com/en/copilot/reference/hooks-reference)
+states that command-hook output from `userPromptSubmitted` is dropped. Therefore
+use `userPromptTransformed` to preserve the existing transformed prompt and
+append a current Daybrief snapshot. The spike verifies this path independently
+of session context. Running-session multi-turn replacement remains to be tested.
