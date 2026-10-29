@@ -96,3 +96,34 @@ def test_malformed_record_and_lock_timeout_surface_errors(tmp_path: Path) -> Non
         with pytest.raises(StorageError, match="locked"):
             with store.transaction():
                 pass
+
+
+def test_empty_deletion_timestamp_does_not_reactivate_record(tmp_path: Path) -> None:
+    path = tmp_path / "state.sqlite"
+    store = Store(path)
+    with store.transaction() as tx:
+        tx.insert(replace(brief(), deleted_at=NOW))
+    with sqlite3.connect(path) as connection:
+        connection.execute("UPDATE briefs SET deleted_at=''")
+    with pytest.raises(StorageError, match="Invalid stored brief"):
+        with store.transaction() as tx:
+            tx.list(("global",), NOW)
+
+
+def test_invalid_configuration_and_unversioned_state_are_not_reset(tmp_path: Path) -> None:
+    path = tmp_path / "state.sqlite"
+    store = Store(path)
+    with store.transaction() as tx:
+        tx.set_config(Config("UTC"))
+    with sqlite3.connect(path) as connection:
+        connection.execute("UPDATE config SET seconds=0, months=0")
+    with pytest.raises(StorageError, match="Invalid stored configuration"):
+        with store.transaction() as tx:
+            tx.config()
+    with sqlite3.connect(path) as connection:
+        connection.execute("PRAGMA user_version=0")
+    original = path.read_bytes()
+    with pytest.raises(StorageError, match="Unversioned"):
+        with store.transaction():
+            pass
+    assert path.read_bytes() == original

@@ -83,7 +83,9 @@ def decode_brief(row: sqlite3.Row) -> Brief:
             expires_at=datetime.fromisoformat(row["expires_at"]),
             timezone=row["timezone"],
             revision=row["revision"],
-            deleted_at=datetime.fromisoformat(row["deleted_at"]) if row["deleted_at"] else None,
+            deleted_at=(
+                datetime.fromisoformat(row["deleted_at"]) if row["deleted_at"] is not None else None
+            ),
         )
     except (ValueError, TypeError, KeyError, AttributeError) as error:
         raise StorageError("Invalid stored brief; repair or restore the database.") from error
