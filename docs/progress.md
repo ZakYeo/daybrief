@@ -236,3 +236,22 @@ refreshes. Synthetic local model only. Fresh-clone hook setup, successful push
 and deliberately rejected failing push pass. Dependency metadata and package
 contents audit is recorded in docs/release-verification.md. Ready for fresh
 step 7 independent review.
+
+Reviewer `/root/step7_review` passed after c54df4c fixed inherited-environment
+isolation in release/fresh-clone/native validation. Client roots are explicitly
+temporary; Git/Python overrides are removed from release subprocesses. Parent
+and reviewer sentinel checks left external profiles untouched. Reviewer passed
+the full 58-test/build gate and clean-wheel validation; parent reran fresh-clone
+passing/failing push verification. No unresolved blocking findings. Step 7 gate
+completed 2026-10-29 (4081bfa through c54df4c).
+
+## Step 8 — personal GitHub publication (in progress)
+
+Slices and evidence:
+
+1. Confirm personal authenticated identity and intended remote; create the public
+   ZakYeo/daybrief repository only if absent and avoid unrelated repositories.
+2. Push reviewed history through the installed pre-push gate; set description and
+   topics, then check public contents, README/banner/license/links and actual CI.
+3. Resolve any publication failures and obtain fresh independent final review;
+   verify the final committed/pushed state before handoff.
