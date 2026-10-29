@@ -47,3 +47,17 @@ def test_hook_install_preserves_existing_config(tmp_path: Path) -> None:
     assert result.returncode != 0
     value = subprocess.check_output(["git", "config", "core.hooksPath"], cwd=tmp_path, text=True)
     assert value.strip() == "custom-hooks"
+
+
+def test_hook_install_preserves_default_hooks(tmp_path: Path) -> None:
+    script = Path(__file__).resolve().parents[1] / "scripts" / "install_hooks.py"
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    hook = tmp_path / ".git/hooks/post-checkout"
+    hook.write_text("#!/bin/sh\nexit 0\n")
+    hook.chmod(0o755)
+    result = subprocess.run(["python3", str(script)], cwd=tmp_path, capture_output=True)
+    assert result.returncode != 0
+    assert b"Existing default Git hooks" in result.stderr
+    assert hook.read_text() == "#!/bin/sh\nexit 0\n"
+    config = subprocess.run(["git", "config", "--local", "--get", "core.hooksPath"], cwd=tmp_path)
+    assert config.returncode == 1

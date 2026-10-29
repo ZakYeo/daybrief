@@ -23,7 +23,8 @@ under MIT; the complete license is included in distributions.
 Pre-commit checks staged whitespace and Python formatting/lint using a temporary
 copy of the index. It never stashes, formats, or rewrites your working files.
 Pre-push runs the entire aggregate gate. Both hooks are version controlled in
-`.githooks`; setup refuses to replace an unrelated `core.hooksPath`. If you
+`.githooks`; setup refuses to replace an unrelated `core.hooksPath` or bypass
+existing executable hooks in Git's default hook directory. If you
 already use another hook manager, integrate these commands there explicitly.
 There is no usable product CLI yet.
 
