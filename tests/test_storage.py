@@ -127,3 +127,24 @@ def test_invalid_configuration_and_unversioned_state_are_not_reset(tmp_path: Pat
         with store.transaction():
             pass
     assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize("table", ["briefs", "config"])
+def test_missing_schema_columns_report_storage_error(tmp_path: Path, table: str) -> None:
+    path = tmp_path / "state.sqlite"
+    with sqlite3.connect(path) as connection:
+        connection.execute("PRAGMA user_version=1")
+        if table == "briefs":
+            connection.execute("CREATE TABLE briefs(id TEXT, scope TEXT)")
+            connection.execute("INSERT INTO briefs VALUES ('b1','global')")
+        else:
+            connection.execute("CREATE TABLE config(singleton INTEGER)")
+            connection.execute("INSERT INTO config VALUES (1)")
+    original = path.read_bytes()
+    with pytest.raises(StorageError, match="Invalid stored"):
+        with Store(path).transaction() as tx:
+            if table == "briefs":
+                tx.get("b1")
+            else:
+                tx.config()
+    assert path.read_bytes() == original

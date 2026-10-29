@@ -87,7 +87,7 @@ def decode_brief(row: sqlite3.Row) -> Brief:
                 datetime.fromisoformat(row["deleted_at"]) if row["deleted_at"] is not None else None
             ),
         )
-    except (ValueError, TypeError, KeyError, AttributeError) as error:
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError) as error:
         raise StorageError("Invalid stored brief; repair or restore the database.") from error
 
 
@@ -154,7 +154,7 @@ class Transaction:
             if row["seconds"] is not None or row["months"] is not None:
                 expiry = Duration(seconds=row["seconds"], months=row["months"])
             return Config(row["timezone"], row["scope"], expiry)
-        except (ValueError, TypeError, KeyError) as error:
+        except (ValueError, TypeError, KeyError, IndexError) as error:
             raise StorageError(
                 "Invalid stored configuration; repair or restore the database."
             ) from error
