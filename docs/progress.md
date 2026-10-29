@@ -147,3 +147,23 @@ the built wheel into a clean Python 3.12 environment and exercised its actual
 console entry point for create/show/clear. Exact local expiry, timezone, and
 details printed correctly. Command guide is in docs/cli.md. Ready for fresh
 step 4 review; adapters have not begun.
+
+Independent reviewer `/root/step4_review` confirmed fd03b13 resolves trailing
+expiry detection and missing command discovery in `--help`. Aggregate gate
+passes 43 tests and both builds; reviewer also exercised isolated real CLI
+lifecycle, configuration, timezone, expiry and validation. Step 4 review passed
+2026-10-29 with no blocking findings (306ad55 through fd03b13).
+
+## Step 5 — client adapters (in progress)
+
+Slices and evidence:
+
+1. Shared complete snapshot renderer and native hook envelopes, including empty
+   withdrawal and read-error invalidation; clock-controlled lifecycle tests.
+2. Packaged skill plus conservative personal installation/update/removal for
+   each client; preserve unrelated configuration and test collisions.
+3. Exercise installed adapters in native clients with loopback model transport,
+   including continuous prompt/tool refresh and compaction where supported;
+   distinguish simulated transport from hosted-model smoke evidence.
+4. Document tested refresh guarantees, run the full gate, and obtain fresh
+   independent review before public-facing documentation.
