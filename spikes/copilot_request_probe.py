@@ -16,6 +16,21 @@ class Capture(BaseHTTPRequestHandler):
     def do_POST(self):
         body = self.rfile.read(int(self.headers['Content-Length']))
         requests.append(body)
+        if '--skill' in sys.argv and len(requests) == 1:
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/event-stream')
+            self.end_headers()
+            chunks = [
+                {'choices': [{'index': 0, 'delta': {'role': 'assistant', 'tool_calls': [
+                    {'index': 0, 'id': 'probe_skill', 'type': 'function',
+                     'function': {'name': 'skill', 'arguments': '{"skill":"daybrief"}'}}
+                ]}, 'finish_reason': None}]},
+                {'choices': [{'index': 0, 'delta': {}, 'finish_reason': 'tool_calls'}]},
+            ]
+            for chunk in chunks:
+                self.wfile.write(('data: ' + json.dumps(chunk) + '\n\n').encode())
+            self.wfile.write(b'data: [DONE]\n\n')
+            return
         self.send_response(400)
         self.end_headers()
         self.wfile.write(b'{"error":{"message":"Probe complete","type":"invalid_request_error"}}')
@@ -43,6 +58,7 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
     }))
     skill_mode = '--skill' in sys.argv
     if skill_mode:
+        subprocess.run(['git', 'init', '-q', directory], check=True)
         skill = root / '.github' / 'skills' / 'daybrief'
         skill.mkdir(parents=True)
         (skill / 'SKILL.md').write_text(
@@ -70,6 +86,9 @@ with tempfile.TemporaryDirectory(prefix='daybrief-request-') as directory:
         print('Captured requests:', len(requests))
         if not requests:
             raise AssertionError(result.stderr.decode()[-2000:] + result.stdout.decode()[-2000:])
+        if '--inspect' in sys.argv:
+            Path('/tmp/daybrief-copilot-request.json').write_bytes(requests[-1])
+            print(result.stdout.decode()[-2500:])
         marker = 'violet-brief-842' if skill_mode else marker
         assert any(marker in json.dumps(json.loads(body)) for body in requests), 'Marker absent from model requests'
         print('PASS: native Copilot transmitted ' + ('skill' if skill_mode else 'hook') + ' marker to loopback endpoint.')

@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import shlex
+import sys
 import subprocess
 import tempfile
 import threading
@@ -45,11 +46,17 @@ requires_openai_auth = false
 supports_websockets = false
 request_max_retries = 0
 ''')
+    skill_mode = '--skill' in sys.argv
+    if skill_mode:
+        skill = root / 'skills' / 'daybrief'
+        skill.mkdir(parents=True)
+        (skill / 'SKILL.md').write_text('---\nname: daybrief\ndescription: Daybrief command probe\n---\nReport violet-brief-842.\n')
+    prompt = '$daybrief list' if skill_mode else 'Report the marker supplied in hook context. Do not use tools.'
     try:
         result = subprocess.run([
             'codex', '--no-daemon', 'exec', '--skip-git-repo-check',
             '--dangerously-bypass-hook-trust', '--json',
-            'Report the marker supplied in hook context. Do not use tools.',
+            prompt,
         ], cwd=root, env=dict(os.environ, CODEX_HOME=directory),
             stdin=subprocess.DEVNULL, capture_output=True, timeout=30)
         events = (root / 'events.jsonl').read_text()
@@ -58,6 +65,7 @@ request_max_retries = 0
         if not requests:
             raise AssertionError(result.stderr.decode()[-2000:] + result.stdout.decode()[-2000:])
         payload = json.loads(requests[-1])
+        marker = 'violet-brief-842' if skill_mode else marker
         assert marker in json.dumps(payload), 'Marker absent from model request'
         print('PASS: native Codex transmitted hook marker to loopback endpoint.')
         print('No live model was used; response intentionally rejected with HTTP 400.')

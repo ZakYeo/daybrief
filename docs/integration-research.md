@@ -162,3 +162,18 @@ endpoint cannot exercise. Investigate native skill discovery and a successful
 mock response/tool cycle before claiming command registration. The optional
 failing spike is deliberately retained to make the unresolved requirement
 reproducible; ordinary hook mode remains separate.
+
+### Deferred skill loading resolved
+
+The Copilot `--skill` probe now passes. The first request advertises a `skill`
+tool; a fixed mock response calls it with `{"skill":"daybrief"}`. The real
+client loads the temporary repository skill and the second captured request
+contains its unique body marker. This proves discovery and native loading,
+not that a real model always chooses the skill. The original one-request
+assertion was insufficient for a client that defers skill loading. The probe
+now initializes a real temporary Git repository and exercises the tool cycle.
+`--inspect` can save the last synthetic request under `/tmp` for diagnosis.
+
+`python3 spikes/codex_request_probe.py --skill` also passes using the documented
+`$daybrief list` skill mention. This verifies the skill entry point; the desired
+bare `/daybrief` CLI alias is still unverified and must not be advertised yet.
