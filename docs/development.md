@@ -26,3 +26,9 @@ Pre-push runs the entire aggregate gate. Both hooks are version controlled in
 `.githooks`; setup refuses to replace an unrelated `core.hooksPath`. If you
 already use another hook manager, integrate these commands there explicitly.
 There is no usable product CLI yet.
+
+After committing hook changes, run `uv run python scripts/verify_push_hook.py`.
+It clones committed HEAD, sets up the hooks, and verifies passing/failing pushes
+to a temporary local bare repository. Dependencies must already be cached for
+its offline fresh-clone install. This separate integration check avoids
+recursively running the full gate from inside its own test suite.

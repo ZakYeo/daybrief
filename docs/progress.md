@@ -63,3 +63,11 @@ Package/check slice committed as cbffff2. `uv sync --frozen` installs on Python
 archive build successfully; wheel inspection confirms the complete MIT license
 is included. CI uses the same gate. Hooks and their isolated failure-path
 verification remain pending, followed by independent step review.
+
+Hook slice committed as 4812907. The full gate passes three tests, including
+real commits with valid/invalid staged content and differing working content,
+plus preservation of unrelated hook configuration. A fresh offline clone
+installed hooks and pushed successfully to a temporary bare remote; an
+intentional formatting error then blocked creation of a second remote branch.
+`scripts/verify_push_hook.py` preserves that integration procedure. Step 2 is
+ready for its independent review; no shared-core work has begun.
