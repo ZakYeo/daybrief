@@ -5,6 +5,7 @@ baseline. The committed lockfile fixes development dependencies.
 
 ```sh
 uv sync --frozen
+uv run --frozen python scripts/install_hooks.py
 uv run --frozen python scripts/check.py
 ```
 
@@ -19,5 +20,9 @@ Build artifacts go to ignored `dist/`. Runtime SQLite data, local configuration,
 caches, and virtual environments must not be committed. The library is licensed
 under MIT; the complete license is included in distributions.
 
-Version-controlled Git hooks and their setup instructions are the next
-foundation slice. There is no usable product CLI yet.
+Pre-commit checks staged whitespace and Python formatting/lint using a temporary
+copy of the index. It never stashes, formats, or rewrites your working files.
+Pre-push runs the entire aggregate gate. Both hooks are version controlled in
+`.githooks`; setup refuses to replace an unrelated `core.hooksPath`. If you
+already use another hook manager, integrate these commands there explicitly.
+There is no usable product CLI yet.
