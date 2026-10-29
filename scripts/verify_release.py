@@ -48,8 +48,18 @@ def verify(wheel: Path, native: bool) -> None:
         home, repo = root / "home", root / "repo"
         home.mkdir()
         repo.mkdir()
-        environment = dict(
-            os.environ, HOME=str(home), DAYBRIEF_DATA_DIR=str(root / "data"), TZ="UTC"
+        environment = {
+            key: value
+            for key, value in os.environ.items()
+            if not key.startswith(("GIT_", "PYTHON"))
+        }
+        environment.update(
+            HOME=str(home),
+            DAYBRIEF_DATA_DIR=str(root / "data"),
+            TZ="UTC",
+            CODEX_HOME=str(home / ".codex"),
+            CLAUDE_CONFIG_DIR=str(home / ".claude"),
+            COPILOT_HOME=str(home / ".copilot"),
         )
 
         def run(args: list[str], cwd: Path = repo) -> str:

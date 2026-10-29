@@ -102,7 +102,8 @@ with tempfile.TemporaryDirectory(prefix='daybrief-installed-') as directory:
     profile = root / 'profile'
     work = root / 'work'
     work.mkdir()
-    subprocess.run(['git', 'init', '-q', str(work)], check=True)
+    subprocess.run(['git', 'init', '-q', str(work)], check=True,
+                   env={key: value for key, value in os.environ.items() if not key.startswith('GIT_')})
     install(args.client, profile)
     app = Daybrief(Store(data / 'state.sqlite'), Config('UTC'))
     brief = app.create('amber-dawn-installed-731', 'global')

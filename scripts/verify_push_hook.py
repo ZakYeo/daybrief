@@ -1,12 +1,19 @@
 """Exercise fresh-clone hook setup and push gates using only a temporary remote."""
 
+import os
 import subprocess
 import tempfile
 from pathlib import Path
 
 
+def clean_environment() -> dict[str, str]:
+    return {
+        key: value for key, value in os.environ.items() if not key.startswith(("GIT_", "PYTHON"))
+    }
+
+
 def run(args: list[str], cwd: Path | None = None) -> str:
-    result = subprocess.run(args, cwd=cwd, capture_output=True, text=True)
+    result = subprocess.run(args, cwd=cwd, env=clean_environment(), capture_output=True, text=True)
     if result.returncode:
         raise RuntimeError(result.stdout + result.stderr)
     return result.stdout
@@ -27,6 +34,7 @@ def main() -> None:
         result = subprocess.run(
             ["git", "push", "origin", "HEAD:refs/heads/failure-check"],
             cwd=clone,
+            env=clean_environment(),
             capture_output=True,
             text=True,
         )
