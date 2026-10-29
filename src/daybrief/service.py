@@ -62,11 +62,14 @@ class Daybrief:
         *,
         duration: Duration | None = None,
         until: datetime | None = None,
+        timezone: str | None = None,
     ) -> Brief:
         self._scope(scope)
         with self.store.transaction() as tx:
             now = instant(self.clock.now())
             config = self._configuration(tx)
+            if timezone is not None:
+                config = replace(config, timezone=timezone)
             expires = self._expiry(now, config, duration, until)
             while True:
                 identifier = secrets.token_hex(4)

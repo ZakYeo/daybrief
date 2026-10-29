@@ -11,6 +11,9 @@ license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "ZakYeo"}]
 
+[project.scripts]
+daybrief = "daybrief.cli:main"
+
 [dependency-groups]
 dev = ["hatchling>=1.27,<2", "mypy>=1.15,<2", "pytest>=8,<10", "ruff>=0.11,<1"]
 
