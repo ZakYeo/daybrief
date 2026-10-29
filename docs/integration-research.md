@@ -105,3 +105,26 @@ delivery from each event (both currently provide the same marker).
 
 Provider configuration follows the official
 [advanced configuration reference](https://learn.chatgpt.com/docs/config-file/config-advanced).
+
+### Claude request capture — passed
+
+`python3 spikes/claude_request_probe.py` runs Claude Code 2.1.312 with a fresh
+configuration, fixed dummy API key, loopback endpoint, no enabled tools, and
+nonessential traffic disabled. Both configured events executed; at least one
+of the three captured requests contained the marker supplied only by the hook.
+The endpoint returns HTTP 400 intentionally. As with Codex, this validates native
+request construction, not a live model or refresh in an existing conversation.
+The earlier missing authentication is therefore not a blocker for this local
+transport check. Configuration variables are documented in the official
+[environment reference](https://code.claude.com/docs/en/env-vars).
+
+### Copilot spike environment
+
+Installed official npm package `@github/copilot@1.0.105` under
+`/tmp/daybrief-copilot-spike` using `--ignore-scripts --no-audit --no-fund`.
+The binary reports GitHub Copilot CLI 1.0.105. Set
+`XDG_CACHE_HOME=/tmp/daybrief-copilot-spike/cache` and
+`COPILOT_HOME=/tmp/daybrief-copilot-spike/config` when running it: the native
+loader otherwise tries to extract into the user's cache, which is read-only
+in this sandbox. No global package installation was performed.
+Native Copilot delivery is still untested.
