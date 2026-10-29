@@ -114,3 +114,11 @@ checks. Full gate passes 22 tests. Evidence covers rollback, stale writes,
 32 concurrent increments without loss, scope/expiry/deletion filtering,
 malformed records, lock timeout, and preservation of corrupt/unknown-version
 files. Lifecycle orchestration and independent step review remain pending.
+
+Lifecycle service now provides creation, persisted defaults, applicable reads,
+history/details, edit, extend/reactivate, idempotent deletion, and scoped active
+clear. Controlled-clock tests verify the product examples, preserved expiry,
+extension relative to prior expiry, exact expiry filtering, deleted-state
+immutability, rollback on invalid creation and scope isolation. Aggregate gate
+passes 27 tests and both builds. The shared core is ready for step 3 review;
+CLI implementation has not begun.
