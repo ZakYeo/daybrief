@@ -45,7 +45,7 @@ def record(brief: Brief, now: datetime) -> dict[str, object]:
     return data
 
 
-def emit(value: object, as_json: bool) -> None:
+def emit(value: object, as_json: bool, details: bool = False) -> None:
     if as_json:
         print(json.dumps(value, ensure_ascii=False))
     elif isinstance(value, list):
@@ -57,6 +57,9 @@ def emit(value: object, as_json: bool) -> None:
         if "message" in value:
             print(f"{value['id']} [{value['scope']}] {value['status']}: {value['message']}")
             print(f"Expires {value['expires_local']} ({value['timezone']})")
+            if details:
+                for key in ("created_at", "updated_at", "deleted_at", "revision"):
+                    print(f"{key}: {value[key]}")
         else:
             for key, item in value.items():
                 print(f"{key}: {item}")
@@ -129,8 +132,6 @@ def dispatch(args: argparse.Namespace) -> object:
     now = app.clock.now()
     if command == "list":
         arguments(words, 0, "list [--all]")
-        if args.scope == "repo" and repo is None:
-            raise ValueError("No repository here; use --scope global.")
         return [record(item, now) for item in app.list(read_scopes, include_all=args.all)]
     if command == "show":
         arguments(words, 1, "show ID")
@@ -150,6 +151,8 @@ def dispatch(args: argparse.Namespace) -> object:
     identifier = words.pop(0) if command == "edit" and words else None
     if not words:
         raise ValueError("Provide a message; use daybrief --help for commands.")
+    if identifier is not None and not args.timezone:
+        config = replace(config, timezone=app.show(identifier, (scope,)).timezone)
     parsed = message_expiry(
         " ".join(words),
         now,
@@ -162,7 +165,15 @@ def dispatch(args: argparse.Namespace) -> object:
     if command == "edit":
         assert identifier is not None
         return record(
-            app.edit(identifier, scope, parsed.message, duration=lifetime, until=until), now
+            app.edit(
+                identifier,
+                scope,
+                parsed.message,
+                duration=lifetime,
+                until=until,
+                timezone=args.timezone,
+            ),
+            now,
         )
     return record(
         app.create(parsed.message, scope, duration=lifetime, until=until, timezone=args.timezone),
@@ -173,7 +184,7 @@ def dispatch(args: argparse.Namespace) -> object:
 def main() -> None:
     try:
         args = parser().parse_intermixed_args()
-        emit(dispatch(args), args.json)
+        emit(dispatch(args), args.json, details=bool(args.words and args.words[0] == "show"))
     except (ValueError, KeyError, StorageError, OSError, OverflowError) as error:
         print(f"daybrief: {error}", file=sys.stderr)
         raise SystemExit(2) from None

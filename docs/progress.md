@@ -140,3 +140,10 @@ Slices and evidence:
    subprocess tests verify scope, exact timezone/expiry, history and errors.
 3. Install built artifact and exercise real commands; run the aggregate gate,
    then fresh independent review and fixes before adapters.
+
+CLI/parser slices implemented in 92f623b and c1b7670, with timezone-edit and
+scope verification added afterward. Aggregate gate passes 42 tests. Installed
+the built wheel into a clean Python 3.12 environment and exercised its actual
+console entry point for create/show/clear. Exact local expiry, timezone, and
+details printed correctly. Command guide is in docs/cli.md. Ready for fresh
+step 4 review; adapters have not begun.

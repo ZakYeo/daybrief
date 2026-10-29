@@ -48,3 +48,24 @@ def test_invalid_and_ambiguous_cli_input(tmp_path: Path) -> None:
         assert result.returncode == 2
         assert "daybrief:" in result.stderr
         assert "Traceback" not in result.stderr
+
+
+def test_cli_scopes_and_timezone_overrides(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+
+    def call(*args: str):
+        result = invoke(tmp_path, *args)
+        assert result.returncode == 0, result.stderr
+        return json.loads(result.stdout)
+
+    global_brief = call("--scope", "global", "Global guidance")
+    repo = call("--timezone", "America/New_York", "Local guidance")
+    assert repo["timezone"] == "America/New_York"
+    assert {item["id"] for item in call("list")} == {repo["id"], global_brief["id"]}
+    edited = call("edit", repo["id"], "Updated", "--until", "2099-01-01")
+    assert edited["expires_at"] == "2099-01-01T05:00:00+00:00"
+    changed_zone = call("edit", repo["id"], "Updated", "--timezone", "UTC", "--until", "2099-01-01")
+    assert changed_zone["expires_at"] == "2099-01-01T00:00:00+00:00"
+    assert changed_zone["timezone"] == "UTC"
+    assert call("clear")["cleared"] == 1
+    assert [item["id"] for item in call("list")] == [global_brief["id"]]

@@ -111,6 +111,7 @@ class Daybrief:
         *,
         duration: Duration | None = None,
         until: datetime | None = None,
+        timezone: str | None = None,
     ) -> Brief:
         with self.store.transaction() as tx:
             brief = self._get(tx, identifier, (scope,))
@@ -118,10 +119,11 @@ class Daybrief:
             now = instant(self.clock.now())
             expires = brief.expires_at
             if duration is not None or until is not None:
-                expires = self._expiry(now, Config(brief.timezone), duration, until)
+                expires = self._expiry(now, Config(timezone or brief.timezone), duration, until)
             changed = replace(
                 brief,
                 message=message,
+                timezone=timezone or brief.timezone,
                 expires_at=expires,
                 updated_at=now,
                 revision=brief.revision + 1,
