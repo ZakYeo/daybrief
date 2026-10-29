@@ -1,6 +1,6 @@
 # Delivery progress
 
-## Step 1 — feasibility (in progress)
+## Step 1 — feasibility (complete)
 
 Slices and required evidence:
 
@@ -32,7 +32,28 @@ withdrawal snapshots on resuming the same session/thread. Skill loading passed
 (Copilot uses its native skill tool). Codex rejects `/daybrief`; the user
 explicitly approved `$daybrief` instead.
 
-The support matrix and design decisions are written. Independent reviewer
-`/root/step1_review` is reviewing commits through e59dee5. The review-and-fix
-gate has not passed and step 2 has not begun. No live hosted model behavior,
-continuous-session refresh, or completed product is claimed.
+Independent reviewer `/root/step1_review` reviewed through e59dee5 and confirmed
+the documentation fix ae0d78a resolves its finding. The reviewer independently
+passed protocol checks, diff checks, Codex/Claude resumed withdrawal, and
+Copilot skill/withdrawal probes. No unresolved blocking step 1 findings remain.
+The step review-and-fix gate passed on 2026-10-29. Commits: 565d5ee through
+ae0d78a. The parent also reran the native Codex slash rejection check.
+
+No live hosted model behavior, continuous-session refresh, or completed product
+is claimed. Continuous/tool/compaction refresh, installation preservation, and
+live model smoke checks remain explicit step 5 acceptance work. Research spikes
+must not become the production adapter architecture.
+
+## Step 2 — foundation (next)
+
+Slices and evidence:
+
+1. Python package, uv lockfile, MIT license, ignore rules, development commands.
+   Verify editable installation and distributable build.
+2. Aggregate formatting/lint/type/test/build check and equivalent GitHub CI.
+   Verify success and representative failing checks.
+3. Version-controlled staged pre-commit and full pre-push hooks, safe with
+   partially staged files. Verify passing/failing paths in isolated repos and
+   document fresh-clone setup.
+4. Fresh independent review of the entire step; fix and confirm findings before
+   implementing the shared core.
