@@ -101,3 +101,9 @@ instant/calendar arithmetic. Full gate passes 13 tests, including DST gaps and
 folds, 23/25-hour local days, fixed elapsed days, leap/month-end clamping, the
 product's one-month example, and exact expiry. Persistence and lifecycle
 services remain pending; no step review requested yet.
+
+Repository/context slice adds canonical Git common-directory scope, explicit
+data-directory precedence, named timezone discovery, and validated defaults.
+Real temporary Git repositories verify nested paths, shared worktree identity,
+separate clone identity, and explicit failure outside a repository. Full gate
+passes 17 tests. SQLite persistence is next.
