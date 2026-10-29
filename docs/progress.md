@@ -227,3 +227,12 @@ Slices and evidence:
    verify hooks from a fresh committed checkout, including pass/fail paths.
 3. Recheck native installed adapters from the release artifact, record exact
    evidence, and obtain fresh independent review before publication.
+
+Release validator committed in 594a649. Full gate passes 58 tests and builds;
+clean-wheel archive/license audit and lifecycle/adapter workflows pass.
+`verify_release.py --native` passes all six probes from the wheel environment:
+all three skills/post-tool withdrawals and continuous prompt/manual-compaction
+refreshes. Synthetic local model only. Fresh-clone hook setup, successful push
+and deliberately rejected failing push pass. Dependency metadata and package
+contents audit is recorded in docs/release-verification.md. Ready for fresh
+step 7 independent review.

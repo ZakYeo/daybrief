@@ -33,3 +33,9 @@ It clones committed HEAD, sets up the hooks, and verifies passing/failing pushes
 to a temporary local bare repository. Dependencies must already be cached for
 its offline fresh-clone install. This separate integration check avoids
 recursively running the full gate from inside its own test suite.
+
+Before a release, build with the aggregate gate, then run
+`uv run --frozen python scripts/verify_release.py` to inspect archives and verify
+the clean-wheel workflow. Add `--native` when all qualified client binaries and
+system pexpect are available; these optional checks bind a loopback model endpoint.
+See [release verification](release-verification.md) for recorded results and limits.
