@@ -6,7 +6,7 @@ used Linux and isolated configuration. No live hosted model was used.
 
 | Surface | Version | Command evidence | Delivery evidence | Resume/withdrawal evidence |
 | --- | --- | --- | --- | --- |
-| Codex CLI | 0.165.0 | `$daybrief list` loads the skill into its request; bare `/daybrief` still unverified | SessionStart and UserPromptSubmit hooks run and inject context | Same thread resumed with a new snapshot; withdrawal reaches the next request |
+| Codex CLI | 0.165.0 | `$daybrief list` loads the skill; bare `/daybrief` is rejected and the user approved `$daybrief` | SessionStart and UserPromptSubmit hooks run and inject context | Same thread resumed with a new snapshot; withdrawal reaches the next request |
 | Claude Code CLI | 2.1.312 | `/daybrief list` expands the installed user skill | SessionStart and UserPromptSubmit hooks run and inject context | Same session resumed with a new snapshot; withdrawal reaches the next request |
 | GitHub Copilot CLI | 1.0.105 | `/daybrief list` reaches the request; fixed mock skill tool call loads its body | SessionStart and userPromptTransformed independently inject context | Prompt transformation supplies withdrawal when the same session resumes |
 

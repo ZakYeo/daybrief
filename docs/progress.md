@@ -26,14 +26,13 @@ Official research starting points opened:
 - https://code.claude.com/docs/en/hooks
 - https://docs.github.com/en/copilot/reference/custom-instructions-support
 
-These are research inputs, not proof that an adapter works. Exact supported
-versions, registration, refresh contracts, and spike results remain pending.
-No milestone or review gate has passed yet.
+Native spike results cover Codex 0.165.0, Claude Code 2.1.312, and Copilot CLI
+1.0.105. All three transmitted hook context to loopback endpoints and received
+withdrawal snapshots on resuming the same session/thread. Skill loading passed
+(Copilot uses its native skill tool). Codex rejects `/daybrief`; the user
+explicitly approved `$daybrief` instead.
 
-Progress through native spike: protocol checks pass, and Codex 0.165.0 ran
-both configured events and sent hook context in a captured loopback model
-request. See `docs/integration-research.md` for the evidence and boundaries.
-Core decisions are drafted in `docs/design-decisions.md`. Still pending:
-command registration, same-conversation refresh, Claude/Copilot validation,
-support matrix, and the independent step review. The previous startup/network
-failures are not treated as proof that these integrations cannot work.
+The support matrix and design decisions are written. Independent reviewer
+`/root/step1_review` is reviewing commits through e59dee5. The review-and-fix
+gate has not passed and step 2 has not begun. No live hosted model behavior,
+continuous-session refresh, or completed product is claimed.

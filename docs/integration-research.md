@@ -2,6 +2,20 @@
 
 Status: step 1 investigation, not a support declaration. Checked 2026-10-29.
 
+## Current outcome
+
+All three native client targets pass hook-to-request capture, skill loading,
+and resumed-session withdrawal checks against local synthetic endpoints.
+Codex's bare `/daybrief` is rejected; the user approved `$daybrief` instead.
+See `support-matrix.md` for the current evidence boundaries and
+`design-decisions.md` for the implementation contract. Independent review is
+pending. Continuous-session, tool/compaction refresh, and real-model behavior
+remain step 5 acceptance checks.
+
+The sections below are a chronological research log. Statements such as
+"pending", "untested", or "currently fails" describe that experiment's state
+at the time, and are superseded by the later passing checks and this summary.
+
 ## Local inventory
 
 Commands returned Codex CLI `0.165.0`, Claude Code `2.1.312`, Python `3.12.3`,
